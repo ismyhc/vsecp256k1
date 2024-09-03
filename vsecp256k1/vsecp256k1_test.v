@@ -13,14 +13,14 @@ fn test_new() {
     x_pubkey_bytes := ctx.serialize_xonly_pubkey(x_pubkey)!
     println('Created x-only public key: $x_pubkey_bytes.hex()')
 
-	nsec_hrp := 'nsec'
+    nsec_hrp := 'nsec'
     nsec := vsecp256k1.encode_from_base256(nsec_hrp, private_key) or {
         println('Encoding failed: $err')
         return
     }
     println('Bech32 encoded private key: $nsec')
 
-	npub_hrp := 'npub'
+    npub_hrp := 'npub'
     npub := vsecp256k1.encode_from_base256(npub_hrp, x_pubkey_bytes) or {
         println('Encoding failed: $err')
         return
