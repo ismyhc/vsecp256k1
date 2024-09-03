@@ -8,6 +8,7 @@ const secp256k1_version = 'v0.5.1' // Update this to the desired version
 const secp256k1_dir = @VMODROOT + '/secp256k1'
 const secp256k1_zip_url = 'https://github.com/bitcoin-core/secp256k1/archive/refs/tags/${secp256k1_version}.zip'
 const secp256k1_zip_file = @VMODROOT + '/secp256k1.zip'
+const secp256k1_hash = '000baf23eba2566b3737a227a6ab46f53719984fe9877fd875726b588446b808'
 
 fn download_file(url string, filepath string) ! {
 	resp := http.get(url)!
@@ -21,7 +22,7 @@ fn verify_sha256(filepath string, expected_hash string) ! {
 	file_content := read_file(filepath)!
 	actual_hash := sha256.sum(file_content.bytes()).hex()
 	if actual_hash != expected_hash {
-		return error('SHA256 verification failed')
+		return error('SHA256 verification failed. Expected: $expected_hash, Actual: $actual_hash')
 	}
 }
 
@@ -52,8 +53,7 @@ fn main() {
 		println('Downloading libsecp256k1...')
 		download_file(secp256k1_zip_url, secp256k1_zip_file)!
 
-		// Note: In a real-world scenario, you should verify the SHA256 hash here
-		// verify_sha256(secp256k1_zip_file, 'expected_sha256_hash') ?
+		verify_sha256(secp256k1_zip_file, secp256k1_hash)!
 
 		println('Extracting libsecp256k1...')
 		execute('unzip ${secp256k1_zip_file} -d ${@VMODROOT}')
