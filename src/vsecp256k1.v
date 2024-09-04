@@ -27,6 +27,7 @@ struct C.secp256k1_xonly_pubkey {}
 struct C.secp256k1_keypair {}
 
 fn C.secp256k1_context_create(u32) &C.secp256k1_context
+fn C.secp256k1_context_randomize(&C.secp256k1_context, &u8) int
 fn C.secp256k1_context_destroy(&C.secp256k1_context)
 fn C.secp256k1_ec_seckey_verify(&C.secp256k1_context, &u8) int
 fn C.secp256k1_ec_pubkey_create(&C.secp256k1_context, &C.secp256k1_pubkey, &u8) int
@@ -37,11 +38,6 @@ fn C.secp256k1_xonly_pubkey_serialize(&C.secp256k1_context, &u8, &C.secp256k1_xo
 fn C.secp256k1_schnorrsig_sign32(&C.secp256k1_context, &u8, &u8, &C.secp256k1_keypair, &u8) int
 fn C.secp256k1_schnorrsig_verify(&C.secp256k1_context, &u8, &u8, int, &C.secp256k1_xonly_pubkey) int
 
-pub const (
-    context_verify = u32(C.SECP256K1_CONTEXT_VERIFY)
-    context_sign   = u32(C.SECP256K1_CONTEXT_SIGN)
-)
-
 pub struct Context {
     ctx &C.secp256k1_context
 }
@@ -50,10 +46,16 @@ pub struct KeyPair {
     keypair C.secp256k1_keypair
 }
 
-pub fn create_context(flags u32) !&Context {
-    ctx := C.secp256k1_context_create(flags)
+pub fn create_context() !&Context {
+    ctx := C.secp256k1_context_create(C.SECP256K1_CONTEXT_NONE)
     if isnil(ctx) {
         return error('Failed to create secp256k1 context')
+    }
+    ctx_rand := rand.bytes(32) or {
+        return error('Failed to generate random bytes')
+    }
+    if C.secp256k1_context_randomize(ctx, ctx_rand.data) != 1 {
+        return error('Failed to randomize secp256k1 context')
     }
     return &Context{ctx}
 }
@@ -64,7 +66,9 @@ pub fn (c &Context) destroy() {
 
 pub fn generate_private_key() ![]u8 {
     for {
-        private_key := rand.bytes(32)!
+        private_key := rand.bytes(32) or {
+            return error('Failed to generate random bytes')
+        }
         if C.secp256k1_ec_seckey_verify(0, private_key.data) == 1 {
             return private_key
         }

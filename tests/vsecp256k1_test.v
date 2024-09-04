@@ -2,7 +2,7 @@ import vsecp256k1
 
 fn test_new() {
 
-    ctx := vsecp256k1.create_context(vsecp256k1.context_sign | vsecp256k1.context_verify)!
+    ctx := vsecp256k1.create_context()!
     defer { ctx.destroy() }
 
     private_key := vsecp256k1.generate_private_key()!
