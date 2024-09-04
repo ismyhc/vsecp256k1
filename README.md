@@ -1,6 +1,7 @@
 # vsecp256k1 - V module that wraps libsecp256k1
 
 ![V Language](https://img.shields.io/badge/language-V-blue.svg)
+![C Langauge](https://img.shields.io/badge/language-C-blue.svg)
 
 This library currently wraps [libsecp256k1 v0.5.1](https://github.com/bitcoin-core/secp256k1) for use in V. It is a work in progress so take that into account.
 
