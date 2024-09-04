@@ -35,6 +35,8 @@ This library currently wraps [libsecp256k1 v0.5.1](https://github.com/bitcoin-co
 This should compile the C code and generate the necessary files for the V module. You should only have to do this once.
 
 ### How to use the module:
+`import ismyhc.vsecp256k1`
+
  - TODO: Add examples
  - TODO: Add documentation
  - TODO: Add tests
