@@ -1,2 +1,25 @@
-/secp256k1
+# Binaries for programs and plugins
+main
+vbech32
+*.exe
+*.exe~
+*.so
+*.dylib
+*.dll
+
+# Ignore binary output folders
+bin/
+
+# Ignore common editor/system specific metadata
 .DS_Store
+.idea/
+.vscode/
+*.iml
+
+# ENV
+.env
+
+# vweb and database
+*.db
+*.js
+/secp256k1
