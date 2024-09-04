@@ -30,7 +30,7 @@ This library currently wraps [libsecp256k1 v0.5.1](https://github.com/bitcoin-co
 - Make sure you have automake and libtool installed
 - Navigate to where the module was installed
 - Run the following command assuming you .vmodules locations is like bellow:
-`v run ~/.vmodules/vsecp256k1/build.vsh`
+`v run ~/.vmodules/ismyhc/vsecp256k1/build.vsh`
 
 This should compile the C code and generate the necessary files for the V module. You should only have to do this once.
 
