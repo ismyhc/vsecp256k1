@@ -65,11 +65,12 @@ pub fn (c &Context) destroy() {
 }
 
 pub fn generate_private_key() ![]u8 {
+    ctx := create_context() or { return error("Failed to create secp256k1 context") }
     for {
         private_key := rand.bytes(32) or {
             return error('Failed to generate random bytes')
         }
-        if C.secp256k1_ec_seckey_verify(0, private_key.data) == 1 {
+        if C.secp256k1_ec_seckey_verify(ctx.ctx, private_key.data) == 1 {
             return private_key
         }
     }
