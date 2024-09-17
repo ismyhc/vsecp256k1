@@ -13,13 +13,13 @@ This library currently wraps [libsecp256k1 v0.5.1](https://github.com/bitcoin-co
 `brew install automake libtool`
 
 ### Ubuntu
-`sudo apt-get install automake libtool`
+`sudo apt-get install automake libtool unzip`
 
 ### Fedora
-`sudo dnf install automake libtool`
+`sudo dnf install automake libtool unzip`
 
 ### CentOS
-`sudo yum install automake libtool`
+`sudo yum install automake libtool unzip`
 
 ### Windows (Not tested)
 - Download and install [MSYS2](https://www.msys2.org/)
