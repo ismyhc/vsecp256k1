@@ -15,12 +15,6 @@ import crypto.sha256
 struct C.secp256k1_context {}
 
 @[typedef]
-struct C.secp256k1_pubkey {}
-
-@[typedef]
-struct C.secp256k1_ecdsa_signature {}
-
-@[typedef]
 struct C.secp256k1_xonly_pubkey {}
 
 @[typedef]
@@ -30,14 +24,14 @@ fn C.secp256k1_context_create(u32) &C.secp256k1_context
 fn C.secp256k1_context_randomize(&C.secp256k1_context, &u8) int
 fn C.secp256k1_context_destroy(&C.secp256k1_context)
 fn C.secp256k1_ec_seckey_verify(&C.secp256k1_context, &u8) int
-fn C.secp256k1_ec_pubkey_create(&C.secp256k1_context, &C.secp256k1_pubkey, &u8) int
-fn C.secp256k1_ecdsa_sign(&C.secp256k1_context, &C.secp256k1_ecdsa_signature, &u8, &u8, voidptr, voidptr) int
 fn C.secp256k1_keypair_create(&C.secp256k1_context, &C.secp256k1_keypair, &u8) int
 fn C.secp256k1_keypair_xonly_pub(&C.secp256k1_context, &C.secp256k1_xonly_pubkey, &int, &C.secp256k1_keypair) int
 fn C.secp256k1_xonly_pubkey_serialize(&C.secp256k1_context, &u8, &C.secp256k1_xonly_pubkey) int
 fn C.secp256k1_schnorrsig_sign32(&C.secp256k1_context, &u8, &u8, &C.secp256k1_keypair, &u8) int
 fn C.secp256k1_schnorrsig_verify(&C.secp256k1_context, &u8, &u8, int, &C.secp256k1_xonly_pubkey) int
 fn C.secp256k1_xonly_pubkey_parse(&C.secp256k1_context, &C.secp256k1_xonly_pubkey, &u8) int
+
+type XOnlyPubkey = C.secp256k1_xonly_pubkey
 
 pub struct Context {
 	ctx &C.secp256k1_context
@@ -82,7 +76,7 @@ pub fn (c &Context) create_keypair(seckey []u8) !KeyPair {
 	return keypair
 }
 
-pub fn (c &Context) create_xonly_pubkey_from_keypair(keypair KeyPair) !&C.secp256k1_xonly_pubkey {
+pub fn (c &Context) create_xonly_pubkey_from_keypair(keypair KeyPair) !&XOnlyPubkey {
 	mut pubkey := &C.secp256k1_xonly_pubkey{}
 	mut pk_parity := 0
 	if C.secp256k1_keypair_xonly_pub(c.ctx, pubkey, &pk_parity, &keypair.keypair) != 1 {
@@ -91,7 +85,7 @@ pub fn (c &Context) create_xonly_pubkey_from_keypair(keypair KeyPair) !&C.secp25
 	return pubkey
 }
 
-pub fn (c &Context) create_xonly_pubkey_from_pubkey_bytes(pubkey []u8) !&C.secp256k1_xonly_pubkey {
+pub fn (c &Context) create_xonly_pubkey_from_pubkey_bytes(pubkey []u8) !&XOnlyPubkey {
 	mut pubkey_struct := &C.secp256k1_xonly_pubkey{}
 	if C.secp256k1_xonly_pubkey_parse(c.ctx, pubkey_struct, pubkey.data) != 1 {
 		return error('Failed to parse x-only public key')
@@ -99,7 +93,7 @@ pub fn (c &Context) create_xonly_pubkey_from_pubkey_bytes(pubkey []u8) !&C.secp2
 	return pubkey_struct
 }
 
-pub fn (c &Context) serialize_xonly_pubkey(pubkey &C.secp256k1_xonly_pubkey) ![]u8 {
+pub fn (c &Context) serialize_xonly_pubkey(pubkey &XOnlyPubkey) ![]u8 {
 	mut serialized := []u8{len: 32}
 	if C.secp256k1_xonly_pubkey_serialize(c.ctx, serialized.data, pubkey) != 1 {
 		return error('Failed to serialize x-only public key')
@@ -117,7 +111,7 @@ pub fn (c &Context) sign_schnorr(msg []u8, keypair KeyPair) ![]u8 {
 	return sig
 }
 
-pub fn (c &Context) verify_schnorr(sig []u8, msg []u8, pubkey &C.secp256k1_xonly_pubkey) bool {
+pub fn (c &Context) verify_schnorr(sig []u8, msg []u8, pubkey &XOnlyPubkey) bool {
 	msg_hash := sha256.sum(msg)
 	return C.secp256k1_schnorrsig_verify(c.ctx, sig.data, msg_hash.data, 32, pubkey) == 1
 }
